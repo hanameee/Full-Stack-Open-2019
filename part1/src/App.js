@@ -1,38 +1,28 @@
-import React, { useState } from "react";
-import History from "./Components/ex2/History";
-import Button from "./Components/ex2/Button";
-
+import React, { useState, useEffect } from "react";
+import Statistics from "./Components/ex6-11/Statistics";
 function App() {
-    const [left, setLeft] = useState(0);
-    const [right, setRight] = useState(0);
-    const [allClicks, setAll] = useState([]);
+    // save clicks of each button to own state
+    const [good, setGood] = useState(0);
+    const [neutral, setNeutral] = useState(0);
+    const [bad, setBad] = useState(0);
 
-    const handleLeftClick = () => {
-        setAll(allClicks.concat("L"));
-        setLeft(left + 1);
+    const clickGoodHandler = () => {
+        setGood(good + 1);
     };
-
-    const handleRightClick = () => {
-        setAll(allClicks.concat("R"));
-        setRight(right + 1);
+    const clickNeutralHandler = () => {
+        setNeutral(neutral + 1);
     };
-
-    const hello = who => console.log("hello", who);
+    const clickBadHandler = () => {
+        setBad(bad + 1);
+    };
 
     return (
-        <div className="App">
-            <div>
-                <div>
-                    left: {left}
-                    <Button onClick={handleLeftClick} text="left" />
-                    <Button onClick={handleRightClick} text="right" />
-                    right: {right}
-                </div>
-                <History allClicks={allClicks} />
-                <button onClick={() => hello("world")}>button</button>
-                <button onClick={() => hello("react")}>button</button>
-                <button onClick={() => hello("function")}>button</button>
-            </div>
+        <div>
+            <h1>Give FeedBack</h1>
+            <button onClick={clickGoodHandler}>Good</button>
+            <button onClick={clickNeutralHandler}>Neutral</button>
+            <button onClick={clickBadHandler}>Bad</button>
+            <Statistics good={good} neutral={neutral} bad={bad} />
         </div>
     );
 }
