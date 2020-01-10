@@ -1,29 +1,60 @@
 import React, { useState, useEffect } from "react";
-import Statistics from "./Components/ex6-11/Statistics";
+import Anecdote from "./Components/ex12-14/Anecdote";
 function App() {
-    // save clicks of each button to own state
-    const [good, setGood] = useState(0);
-    const [neutral, setNeutral] = useState(0);
-    const [bad, setBad] = useState(0);
-
-    const clickGoodHandler = () => {
-        setGood(good + 1);
-    };
-    const clickNeutralHandler = () => {
-        setNeutral(neutral + 1);
-    };
-    const clickBadHandler = () => {
-        setBad(bad + 1);
+    const [selected, setSelected] = useState(-1);
+    const arr = Array(6).fill(0);
+    const [points, setPoints] = useState(arr);
+    const [maxVote, setMaxVote] = useState(-1);
+    const clickedRandomHandler = () => {
+        const randomNum = Math.floor(Math.random() * 6);
+        setSelected(randomNum);
     };
 
+    const clickedVoteHandler = () => {
+        const newPoints = [...points];
+        newPoints[selected] += 1;
+        setPoints(newPoints);
+    };
+
+    useEffect(() => {
+        let newMaxVote = points.reduce((acc, cur) => {
+            if (cur > 0 && cur > acc) {
+                return cur;
+            } else {
+                return acc;
+            }
+        }, -1);
+        newMaxVote = points.findIndex((item, index) => {
+            return item === newMaxVote;
+        });
+        setMaxVote(newMaxVote);
+    }, [points]);
+    if (selected === -1) {
+        return (
+            <div>
+                <button onClick={clickedRandomHandler}>Click me!</button>
+                <h1>try pressing the buttons! :)</h1>
+            </div>
+        );
+    }
     return (
-        <div>
-            <h1>Give FeedBack</h1>
-            <button onClick={clickGoodHandler}>Good</button>
-            <button onClick={clickNeutralHandler}>Neutral</button>
-            <button onClick={clickBadHandler}>Bad</button>
-            <Statistics good={good} neutral={neutral} bad={bad} />
-        </div>
+        <>
+            <h1>Anecdote of the Day</h1>
+            <Anecdote index={selected} />: has <b>{points[selected]}</b> votes
+            <br />
+            <button onClick={clickedRandomHandler}>
+                Next anecdote(random)
+            </button>
+            <button onClick={clickedVoteHandler}>Vote</button>
+            <h1>Anecdote with most votes</h1>
+            {maxVote == -1 ? (
+                "there is no vote yet :("
+            ) : (
+                <Anecdote index={maxVote} />
+            )}
+            {/* {points}
+            maxVote: {maxVote} */}
+        </>
     );
 }
 
