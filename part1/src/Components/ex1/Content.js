@@ -1,11 +1,11 @@
 import React from "react";
 import Part from "./Part";
 
-function Content({ contentData }) {
+function Content({ course }) {
     return (
         <>
-            {contentData.map(data => (
-                <Part partData={data} />
+            {course.parts.map(part => (
+                <Part partData={part} />
             ))}
         </>
     );

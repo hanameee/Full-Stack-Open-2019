@@ -1,12 +1,12 @@
 import React from "react";
 
 function Part({ partData }) {
-    const [part, exercise] = partData;
+    const { name, exercises } = partData;
     return (
         <div>
             <p>
-                Part: {part} <br />
-                Exercise:{exercise}
+                Part: {name} <br />
+                Exercise:{exercises}
             </p>
         </div>
     );
