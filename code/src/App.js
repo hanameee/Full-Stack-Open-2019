@@ -1,41 +1,46 @@
 import React, { useState } from "react";
-import Note from "./Components/Note";
+import Filter from "./Components/part2/ex6-10/Filter";
+import PersonForm from "./Components/part2/ex6-10/PersonForm";
+import Persons from "./Components/part2/ex6-10/Persons";
 
-const App = props => {
-    const [notes, setNotes] = useState(props.notes);
-    const [newNote, setNewNote] = useState("");
-    const [showAll, setShowAll] = useState(true);
-    const handleShowAll = () => {
-        setShowAll(!showAll);
-    };
-    const handleNoteChange = event => {
-        setNewNote(event.target.value);
-    };
-    const notesToShow = showAll ? notes : notes.filter(note => note.important);
-    const rows = () =>
-        notesToShow.map(note => <Note key={note.id} note={note} />);
-    const addNote = event => {
+const App = () => {
+    const [person, setPerson] = useState([
+        { name: "Arto Hellas", number: "040-123456" },
+        { name: "Ada Lovelace", number: "39-44-5323523" },
+        { name: "Dan Abramov", number: "12-43-234345" },
+        { name: "Mary Poppendieck", number: "39-23-6423122" }
+    ]);
+    const [filter, setFilter] = useState("");
+    const [newName, setNewName] = useState("");
+    const [newNumber, setNewNumber] = useState("");
+    const handleOnSubmit = event => {
         event.preventDefault();
-        const noteObject = {
-            content: newNote,
-            date: new Date().toISOString(),
-            important: Math.random() > 0.5,
-            id: notes.length + 1
+        const nameObject = {
+            name: newName,
+            number: newNumber
         };
-        setNotes(notes.concat(noteObject));
-        setNewNote(" ");
+        if (person.find(person => person.name === newName) === undefined) {
+            setPerson(person.concat(nameObject));
+            setNewName("");
+            setNewNumber("");
+        } else {
+            alert(`${newName} is already added to phonebook`);
+        }
     };
     return (
         <div>
-            <h1>Notes</h1>
-            <button onClick={handleShowAll}>
-                show {showAll ? "important" : "all"}
-            </button>
-            <ul>{rows()}</ul>
-            <form onSubmit={addNote}>
-                <input value={newNote} onChange={handleNoteChange} />
-                <button type="submit">save</button>
-            </form>
+            <h2>Phonebook</h2>
+            <Filter person={person} filter={filter} setFilter={setFilter} />
+            <h3>Add a new</h3>
+            <PersonForm
+                newName={newName}
+                setNewName={setNewName}
+                newNumber={newNumber}
+                setNewNumber={setNewNumber}
+                handleOnSubmit={handleOnSubmit}
+            />
+            <h3>Numbers</h3>
+            <Persons person={person} />
         </div>
     );
 };
