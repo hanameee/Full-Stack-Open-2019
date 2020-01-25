@@ -1,5 +1,3 @@
-import React from "react";
-
 function Course({ course }) {
     const parts = course.parts.map(part => (
         <p key={part.id}>
