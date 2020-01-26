@@ -1,10 +1,7 @@
 import React from "react";
 
 function CountryData({ props }) {
-    console.log(props, "CountryData");
-    // if (!isClicked) return null;
     const country = props;
-    // const [country] = props;
     const countryLanguages = country.languages.map((language, i) => (
         <li key={i}>{language.name}</li>
     ));

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import CountryData from "./Components/part2/ex11-14/CountryData";
 import FilteredResult from "./Components/part2/ex11-14/FilteredResult";
 const App = () => {
     const [countries, setCountries] = useState(null);
@@ -40,16 +39,6 @@ const App = () => {
                 clickedCountry={clickedCountry}
                 showClickHandler={showClickHandler}
             />
-            {/* <div>
-                {filteredCountries && filteredResult.length > 10 ? (
-                    "Too many matches, please specify filter"
-                ) : filteredResult.length === 1 ? (
-                    <CountryData props={filteredCountries[0]} />
-                ) : (
-                    // filteredResult
-                    <FilteredResult props={filteredCountries} />
-                )}
-            </div> */}
         </div>
     );
 };

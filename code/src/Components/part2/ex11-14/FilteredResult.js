@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import CountryData from "./CountryData";
 
 function FilteredResult({ props, clickedCountry, showClickHandler }) {
