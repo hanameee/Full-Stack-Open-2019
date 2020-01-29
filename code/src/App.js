@@ -9,7 +9,7 @@ const App = () => {
     const [showAll, setShowAll] = useState(true);
 
     useEffect(() => {
-        axios.get("http://localhost:3001/notes").then(returnedData => {
+        noteService.getAll().then(returnedData => {
             setNotes(returnedData);
         });
     }, []);
@@ -37,7 +37,13 @@ const App = () => {
                 setNotes(
                     notes.map(note => (note.id !== id ? note : returnedNote))
                 )
-            );
+            )
+            .catch(error => {
+                alert(
+                    `the note '${note.content}' was already deleted from server`
+                );
+                setNotes(notes.filter(n => n.id !== id));
+            });
     };
     const addNote = event => {
         event.preventDefault();
