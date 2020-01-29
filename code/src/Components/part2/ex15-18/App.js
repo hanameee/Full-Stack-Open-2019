@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from "react";
-import Filter from "./Components/part2/ex15-18/Filter";
-import PersonForm from "./Components/part2/ex15-18/PersonForm";
-import Persons from "./Components/part2/ex15-18/Persons";
+import Filter from "./Components/part2/ex6-10/Filter";
+import PersonForm from "./Components/part2/ex6-10/PersonForm";
+import Persons from "./Components/part2/ex6-10/Persons";
 import axios from "axios";
+import Note from "./Components/Note";
 
 const App = () => {
-    const [person, setPerson] = useState([]);
+    const [notes, setNotes] = useState([]);
+    useEffect(() => {
+        console.log("effect");
+        axios.get("http://localhost:3001/persons").then(response => {
+            console.log("promise furfilled");
+            setNotes(response.data);
+        });
+    }, []);
+    console.log("render", notes.length, "notes");
+    console.log(notes);
+    const [person, setPerson] = useState([
+        { name: "Arto Hellas", number: "040-123456" },
+        { name: "Ada Lovelace", number: "39-44-5323523" },
+        { name: "Dan Abramov", number: "12-43-234345" },
+        { name: "Mary Poppendieck", number: "39-23-6423122" }
+    ]);
     const [filter, setFilter] = useState("");
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
-
-    useEffect(() => {
-        axios.get("http://localhost:3001/persons").then(response => {
-            console.log("promise furfilled");
-            setPerson(response.data);
-        });
-    }, []);
-
     const handleOnSubmit = event => {
         event.preventDefault();
         const nameObject = {
@@ -24,16 +32,13 @@ const App = () => {
             number: newNumber
         };
         if (person.find(person => person.name === newName) === undefined) {
-            axios
-                .post("http://localhost:3001/persons", nameObject)
-                .then(response => setPerson(person.concat(response.data)));
+            setPerson(person.concat(nameObject));
             setNewName("");
             setNewNumber("");
         } else {
             alert(`${newName} is already added to phonebook`);
         }
     };
-
     return (
         <div>
             <h2>Phonebook</h2>
@@ -48,6 +53,7 @@ const App = () => {
             />
             <h3>Numbers</h3>
             <Persons person={person} />
+            <Note notes={notes} />
         </div>
     );
 };
