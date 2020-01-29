@@ -11,6 +11,11 @@ const create = newObject => {
     return request.then(response => response.data);
 };
 
+const update = (id, newObject) => {
+    console.log(id, newObject);
+    const request = axios.put(`${baseURL}/${id}`, newObject);
+    return request.then(response => response.data);
+};
 // delete is reserved word
 const remove = id => {
     return axios.delete(`${baseURL}/${id}`);
@@ -19,5 +24,6 @@ const remove = id => {
 export default {
     getAll,
     create,
+    update,
     remove
 };

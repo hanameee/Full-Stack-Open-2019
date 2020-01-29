@@ -19,14 +19,36 @@ const App = () => {
             name: newName,
             number: newNumber
         };
-        if (people.find(person => person.name === newName) === undefined) {
+        const targetPerson = people.find(person => person.name === newName);
+
+        if (targetPerson === undefined) {
             peopleService
                 .create(nameObject)
                 .then(returnedData => setPeople(people.concat(returnedData)));
             setNewName("");
             setNewNumber("");
         } else {
-            alert(`${newName} is already added to phonebook`);
+            if (
+                window.confirm(
+                    `${targetPerson.name} is already added to phonebook. Replace the old number with a new one?`
+                )
+            ) {
+                console.log(targetPerson, "targetPerson");
+                peopleService
+                    .update(targetPerson.id, nameObject)
+                    .then(returnedData =>
+                        setPeople(
+                            people.map(person =>
+                                person.id !== returnedData.id
+                                    ? person
+                                    : returnedData
+                            )
+                        )
+                    );
+                // .then(response =>
+                //     setPeople(people.map(person => person.id !== response.id ? ))
+                // );
+            }
         }
     };
 
