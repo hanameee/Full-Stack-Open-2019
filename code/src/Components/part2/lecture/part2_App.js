@@ -1,59 +1,75 @@
 import React, { useState, useEffect } from "react";
-import Filter from "./Components/part2/ex6-10/Filter";
-import PersonForm from "./Components/part2/ex6-10/PersonForm";
-import Persons from "./Components/part2/ex6-10/Persons";
-import axios from "axios";
 import Note from "./Components/Note";
+import noteService from "./Services/notes";
 
 const App = () => {
     const [notes, setNotes] = useState([]);
+    const [newNote, setNewNote] = useState("");
+    const [showAll, setShowAll] = useState(true);
+
     useEffect(() => {
-        console.log("effect");
-        axios.get("http://localhost:3001/persons").then(response => {
-            console.log("promise furfilled");
-            setNotes(response.data);
+        noteService.getAll().then(returnedData => {
+            setNotes(returnedData);
         });
     }, []);
-    console.log("render", notes.length, "notes");
-    console.log(notes);
-    const [person, setPerson] = useState([
-        { name: "Arto Hellas", number: "040-123456" },
-        { name: "Ada Lovelace", number: "39-44-5323523" },
-        { name: "Dan Abramov", number: "12-43-234345" },
-        { name: "Mary Poppendieck", number: "39-23-6423122" }
-    ]);
-    const [filter, setFilter] = useState("");
-    const [newName, setNewName] = useState("");
-    const [newNumber, setNewNumber] = useState("");
-    const handleOnSubmit = event => {
-        event.preventDefault();
-        const nameObject = {
-            name: newName,
-            number: newNumber
-        };
-        if (person.find(person => person.name === newName) === undefined) {
-            setPerson(person.concat(nameObject));
-            setNewName("");
-            setNewNumber("");
-        } else {
-            alert(`${newName} is already added to phonebook`);
-        }
+
+    const notesToShow = showAll ? notes : notes.filter(note => note.important);
+
+    const rows = () =>
+        notesToShow.map(note => (
+            <Note
+                note={note}
+                toggleImportance={() => toggleImportanceOf(note.id)}
+            />
+        ));
+
+    const handleNoteChange = event => {
+        setNewNote(event.target.value);
     };
+
+    const toggleImportanceOf = id => {
+        const note = notes.find(note => note.id === id);
+        const changedNote = { ...note, important: !note.important };
+        noteService
+            .update(note.id, changedNote)
+            .then(returnedNote =>
+                setNotes(
+                    notes.map(note => (note.id !== id ? note : returnedNote))
+                )
+            )
+            .catch(error => {
+                alert(
+                    `the note '${note.content}' was already deleted from server`
+                );
+                setNotes(notes.filter(n => n.id !== id));
+            });
+    };
+    const addNote = event => {
+        event.preventDefault();
+        const noteObject = {
+            content: newNote,
+            date: new Date().toISOString(),
+            important: Math.random() > 0.5
+        };
+        noteService.create(noteObject).then(returnedNote => {
+            setNotes(notes.concat(returnedNote));
+            setNewNote("");
+        });
+    };
+
     return (
         <div>
-            <h2>Phonebook</h2>
-            <Filter person={person} filter={filter} setFilter={setFilter} />
-            <h3>Add a new</h3>
-            <PersonForm
-                newName={newName}
-                setNewName={setNewName}
-                newNumber={newNumber}
-                setNewNumber={setNewNumber}
-                handleOnSubmit={handleOnSubmit}
-            />
-            <h3>Numbers</h3>
-            <Persons person={person} />
-            <Note notes={notes} />
+            <h1>Notes</h1>
+            <div>
+                <button onClick={() => setShowAll(!showAll)}>
+                    show {showAll ? "important" : "all"}
+                </button>
+            </div>
+            <ul>{rows()}</ul>
+            <form onSubmit={addNote}>
+                <input value={newNote} onChange={handleNoteChange} />
+                <button type="submit">save</button>
+            </form>
         </div>
     );
 };

@@ -13,7 +13,7 @@ const getAll = () => {
 };
 
 const create = newObject => {
-    const request = Axios.put(baseURL, newObject);
+    const request = Axios.post(baseURL, newObject);
     return request.then(response => response.data);
 };
 

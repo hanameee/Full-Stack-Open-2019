@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import Filter from "./Components/part2/ex15-18/Filter";
 import PersonForm from "./Components/part2/ex15-18/PersonForm";
 import Persons from "./Components/part2/ex15-18/Persons";
-import axios from "axios";
-
+import personsService from "./Services/persons";
 const App = () => {
     const [person, setPerson] = useState([]);
     const [filter, setFilter] = useState("");
@@ -11,10 +10,7 @@ const App = () => {
     const [newNumber, setNewNumber] = useState("");
 
     useEffect(() => {
-        axios.get("http://localhost:3001/persons").then(response => {
-            console.log("promise furfilled");
-            setPerson(response.data);
-        });
+        personsService.getAll().then(returnedData => setPerson(returnedData));
     }, []);
 
     const handleOnSubmit = event => {
@@ -24,9 +20,9 @@ const App = () => {
             number: newNumber
         };
         if (person.find(person => person.name === newName) === undefined) {
-            axios
-                .post("http://localhost:3001/persons", nameObject)
-                .then(response => setPerson(person.concat(response.data)));
+            personsService
+                .create(nameObject)
+                .then(returnedData => setPerson(person.concat(returnedData)));
             setNewName("");
             setNewNumber("");
         } else {

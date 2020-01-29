@@ -24,6 +24,11 @@
       "name": "Hannah Banana",
       "number": "010-4074-3188",
       "id": 5
+    },
+    {
+      "name": "Seperate Module",
+      "number": "123-4567",
+      "id": 6
     }
   ]
 }
