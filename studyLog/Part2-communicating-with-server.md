@@ -193,3 +193,4 @@ PUT이 특정 리소스의 모든 프로퍼티를 업데이트 (=replace) 하기
 ([RFC 2616 PUT](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6))
 (3) **PATCH** to a URL **updates part of the resource** at that **client defined** URL
 ([RFC 5789: Patch Method for HTTP](http://tools.ietf.org/html/rfc5789))
+
