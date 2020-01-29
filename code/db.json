@@ -11,23 +11,13 @@
       "id": 6
     },
     {
-      "name": "test",
-      "number": "12312",
-      "id": 7
-    },
-    {
       "name": "changeMe",
       "number": "01010100",
       "id": 8
     },
     {
-      "name": "yoyo",
-      "number": "24",
-      "id": 9
-    },
-    {
-      "name": "wowowowo",
-      "number": "123121213123123",
+      "name": "test2",
+      "number": "alalalal",
       "id": 10
     }
   ]

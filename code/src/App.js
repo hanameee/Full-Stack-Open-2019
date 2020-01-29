@@ -10,7 +10,11 @@ const App = () => {
     const [filter, setFilter] = useState("");
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
-    const [message, setMessage] = useState(null);
+    const initialMessage = {
+        content: "",
+        type: null
+    };
+    const [message, setMessage] = useState(initialMessage);
 
     useEffect(() => {
         peopleService.getAll().then(returnedData => setPeople(returnedData));
@@ -26,8 +30,11 @@ const App = () => {
         if (targetPerson === undefined) {
             peopleService.create(nameObject).then(returnedData => {
                 setPeople(people.concat(returnedData));
-                setMessage(`Added ${returnedData.name}`);
-                setTimeout(() => setMessage(null), 3000);
+                setMessage({
+                    content: `Added ${returnedData.name}`,
+                    type: "notice"
+                });
+                setTimeout(() => setMessage(initialMessage), 3000);
             });
             setNewName("");
             setNewNumber("");
@@ -48,8 +55,23 @@ const App = () => {
                                     : returnedData
                             )
                         );
-                        setMessage(`Updated ${returnedData.name}`);
-                        setTimeout(() => setMessage(null), 3000);
+                        setMessage({
+                            content: `Updated ${returnedData.name}`,
+                            type: "notice"
+                        });
+                        setTimeout(() => setMessage(initialMessage), 3000);
+                    })
+                    .catch(error => {
+                        setPeople(
+                            people.filter(
+                                person => person.id !== targetPerson.id
+                            )
+                        );
+                        setMessage({
+                            content: `Information of ${targetPerson.name} has already been deleted from the server`,
+                            type: "warning"
+                        });
+                        setTimeout(() => setMessage(initialMessage), 3000);
                     });
             }
         }
