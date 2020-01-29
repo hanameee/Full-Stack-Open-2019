@@ -1,13 +1,13 @@
 import React from "react";
 
-const Filter = ({ person, filter, setFilter }) => {
-    const pl = person.map(person => person.name.toLowerCase());
-    const filteredPerson = pl.filter(name =>
+const Filter = ({ people, filter, setFilter }) => {
+    const pl = people.map(person => person.name.toLowerCase());
+    const filteredPeople = pl.filter(name =>
         name.includes(filter.toLowerCase())
     );
     const filteredResult =
-        filteredPerson.length !== 0 ? (
-            filteredPerson.map((item, i) => <p key={i}>{item}</p>)
+        filteredPeople.length !== 0 ? (
+            filteredPeople.map((item, i) => <p key={i}>{item}</p>)
         ) : (
             <p>
                 <b>no result found</b>

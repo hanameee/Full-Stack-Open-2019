@@ -1,6 +1,6 @@
 import React from "react";
 
-function PersonForm({
+function PeopleForm({
     newName,
     setNewName,
     newNumber,
@@ -30,4 +30,4 @@ function PersonForm({
     );
 }
 
-export default PersonForm;
+export default PeopleForm;

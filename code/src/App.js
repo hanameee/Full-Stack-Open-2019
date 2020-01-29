@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Filter from "./Components/part2/ex15-18/Filter";
-import PersonForm from "./Components/part2/ex15-18/PersonForm";
-import Persons from "./Components/part2/ex15-18/Persons";
-import personsService from "./Services/persons";
+import PeopleForm from "./Components/part2/ex15-18/PeopleForm";
+import People from "./Components/part2/ex15-18/People";
+import peopleService from "./Services/people";
 const App = () => {
-    const [person, setPerson] = useState([]);
+    const [people, setPeople] = useState([]);
     const [filter, setFilter] = useState("");
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
 
     useEffect(() => {
-        personsService.getAll().then(returnedData => setPerson(returnedData));
+        peopleService.getAll().then(returnedData => setPeople(returnedData));
     }, []);
 
     const handleOnSubmit = event => {
@@ -19,10 +19,10 @@ const App = () => {
             name: newName,
             number: newNumber
         };
-        if (person.find(person => person.name === newName) === undefined) {
-            personsService
+        if (people.find(person => person.name === newName) === undefined) {
+            peopleService
                 .create(nameObject)
-                .then(returnedData => setPerson(person.concat(returnedData)));
+                .then(returnedData => setPeople(people.concat(returnedData)));
             setNewName("");
             setNewNumber("");
         } else {
@@ -33,9 +33,9 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
-            <Filter person={person} filter={filter} setFilter={setFilter} />
+            <Filter people={people} filter={filter} setFilter={setFilter} />
             <h3>Add a new</h3>
-            <PersonForm
+            <PeopleForm
                 newName={newName}
                 setNewName={setNewName}
                 newNumber={newNumber}
@@ -43,7 +43,7 @@ const App = () => {
                 handleOnSubmit={handleOnSubmit}
             />
             <h3>Numbers</h3>
-            <Persons person={person} />
+            <People people={people} setPeople={setPeople} />
         </div>
     );
 };

@@ -11,7 +11,13 @@ const create = newObject => {
     return request.then(response => response.data);
 };
 
+// delete is reserved word
+const remove = id => {
+    return axios.delete(`${baseURL}/${id}`);
+};
+
 export default {
     getAll,
-    create
+    create,
+    remove
 };

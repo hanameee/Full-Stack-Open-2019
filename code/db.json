@@ -1,33 +1,13 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    },
-    {
       "name": "Hannah Banana",
       "number": "010-4074-3188",
       "id": 5
     },
     {
-      "name": "Seperate Module",
-      "number": "123-4567",
+      "name": "JeongHo Nam",
+      "number": "010-7799-4427",
       "id": 6
     }
   ]
