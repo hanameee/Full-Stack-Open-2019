@@ -194,3 +194,7 @@ PUT이 특정 리소스의 모든 프로퍼티를 업데이트 (=replace) 하기
 (3) **PATCH** to a URL **updates part of the resource** at that **client defined** URL
 ([RFC 5789: Patch Method for HTTP](http://tools.ietf.org/html/rfc5789))
 
+---
+
+[e) Adding styles to React app](https://fullstackopen.com/en/part2/adding_styles_to_react_app)
+

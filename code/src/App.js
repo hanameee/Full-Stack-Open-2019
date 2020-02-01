@@ -1,97 +1,75 @@
 import React, { useState, useEffect } from "react";
-import Filter from "./Components/part2/ex19-20/Filter";
-import PeopleForm from "./Components/part2/ex19-20/PeopleForm";
-import People from "./Components/part2/ex19-20/People";
-import peopleService from "./Services/people";
-import Notification from "./Components/Notification";
+import Note from "./Components/Note";
+import noteService from "./Services/notes";
 
 const App = () => {
-    const [people, setPeople] = useState([]);
-    const [filter, setFilter] = useState("");
-    const [newName, setNewName] = useState("");
-    const [newNumber, setNewNumber] = useState("");
-    const initialMessage = {
-        content: "",
-        type: null
-    };
-    const [message, setMessage] = useState(initialMessage);
+    const [notes, setNotes] = useState([]);
+    const [newNote, setNewNote] = useState("");
+    const [showAll, setShowAll] = useState(true);
 
     useEffect(() => {
-        peopleService.getAll().then(returnedData => setPeople(returnedData));
+        noteService.getAll().then(returnedData => {
+            setNotes(returnedData);
+        });
     }, []);
 
-    const handleOnSubmit = event => {
-        event.preventDefault();
-        const nameObject = {
-            name: newName,
-            number: newNumber
-        };
-        const targetPerson = people.find(person => person.name === newName);
-        if (targetPerson === undefined) {
-            peopleService.create(nameObject).then(returnedData => {
-                setPeople(people.concat(returnedData));
-                setMessage({
-                    content: `Added ${returnedData.name}`,
-                    type: "notice"
-                });
-                setTimeout(() => setMessage(initialMessage), 3000);
-            });
-            setNewName("");
-            setNewNumber("");
-        } else {
-            if (
-                window.confirm(
-                    `${targetPerson.name} is already added to phonebook. Replace the old number with a new one?`
+    const notesToShow = showAll ? notes : notes.filter(note => note.important);
+
+    const rows = () =>
+        notesToShow.map(note => (
+            <Note
+                note={note}
+                toggleImportance={() => toggleImportanceOf(note.id)}
+            />
+        ));
+
+    const handleNoteChange = event => {
+        setNewNote(event.target.value);
+    };
+
+    const toggleImportanceOf = id => {
+        const note = notes.find(note => note.id === id);
+        const changedNote = { ...note, important: !note.important };
+        noteService
+            .update(note.id, changedNote)
+            .then(returnedNote =>
+                setNotes(
+                    notes.map(note => (note.id !== id ? note : returnedNote))
                 )
-            ) {
-                console.log(targetPerson, "targetPerson");
-                peopleService
-                    .update(targetPerson.id, nameObject)
-                    .then(returnedData => {
-                        setPeople(
-                            people.map(person =>
-                                person.id !== returnedData.id
-                                    ? person
-                                    : returnedData
-                            )
-                        );
-                        setMessage({
-                            content: `Updated ${returnedData.name}`,
-                            type: "notice"
-                        });
-                        setTimeout(() => setMessage(initialMessage), 3000);
-                    })
-                    .catch(error => {
-                        setPeople(
-                            people.filter(
-                                person => person.id !== targetPerson.id
-                            )
-                        );
-                        setMessage({
-                            content: `Information of ${targetPerson.name} has already been deleted from the server`,
-                            type: "warning"
-                        });
-                        setTimeout(() => setMessage(initialMessage), 3000);
-                    });
-            }
-        }
+            )
+            .catch(error => {
+                alert(
+                    `the note '${note.content}' was already deleted from server`
+                );
+                setNotes(notes.filter(n => n.id !== id));
+            });
+    };
+    const addNote = event => {
+        event.preventDefault();
+        const noteObject = {
+            content: newNote,
+            date: new Date().toISOString(),
+            important: Math.random() > 0.5
+        };
+        noteService.create(noteObject).then(returnedNote => {
+            setNotes(notes.concat(returnedNote));
+            setNewNote("");
+        });
     };
 
     return (
         <div>
-            <h2>Phonebook</h2>
-            <Notification message={message} />
-            <Filter people={people} filter={filter} setFilter={setFilter} />
-            <h3>Add a new</h3>
-            <PeopleForm
-                newName={newName}
-                setNewName={setNewName}
-                newNumber={newNumber}
-                setNewNumber={setNewNumber}
-                handleOnSubmit={handleOnSubmit}
-            />
-            <h3>Numbers</h3>
-            <People people={people} setPeople={setPeople} />
+            <h1>Notes</h1>
+            <div>
+                <button onClick={() => setShowAll(!showAll)}>
+                    show {showAll ? "important" : "all"}
+                </button>
+            </div>
+            <ul>{rows()}</ul>
+            <form onSubmit={addNote}>
+                <input value={newNote} onChange={handleNoteChange} />
+                <button type="submit">save</button>
+            </form>
         </div>
     );
 };
