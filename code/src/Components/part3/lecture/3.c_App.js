@@ -15,14 +15,16 @@ const App = () => {
 
     const notesToShow = showAll ? notes : notes.filter(note => note.important);
 
-    const rows = () =>
-        notesToShow.map(note => (
+    const rows = () => {
+        return notesToShow.map(note => (
             <Note
                 note={note}
                 toggleImportance={() => toggleImportanceOf(note.id)}
+                getSpecific={() => noteService.getSpecific(note.id)}
+                removeOf={() => removeOf(note.id)}
             />
         ));
-
+    };
     const handleNoteChange = event => {
         setNewNote(event.target.value);
     };
@@ -32,17 +34,25 @@ const App = () => {
         const changedNote = { ...note, important: !note.important };
         noteService
             .update(note.id, changedNote)
-            .then(returnedNote =>
+            .then(returnedNote => {
                 setNotes(
                     notes.map(note => (note.id !== id ? note : returnedNote))
-                )
-            )
+                );
+            })
             .catch(error => {
+                console.log(error);
                 alert(
                     `the note '${note.content}' was already deleted from server`
                 );
                 setNotes(notes.filter(n => n.id !== id));
             });
+    };
+
+    const removeOf = id => {
+        const note = notes.find(note => note.id === id);
+        noteService
+            .remove(note.id)
+            .then(() => setNotes(notes.filter(note => note.id !== id)));
     };
     const addNote = event => {
         event.preventDefault();
@@ -52,6 +62,7 @@ const App = () => {
             important: Math.random() > 0.5
         };
         noteService.create(noteObject).then(returnedNote => {
+            console.log(returnedNote, "얍");
             setNotes(notes.concat(returnedNote));
             setNewNote("");
         });

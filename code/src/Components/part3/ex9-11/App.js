@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Filter from "./Components/part2/ex15-18/Filter";
 import PeopleForm from "./Components/part2/ex15-18/PeopleForm";
-import People from "./Components/part2/ex15-18/People";
+import People from "../../People";
 import peopleService from "./Services/people";
 
 const App = () => {
@@ -21,7 +21,6 @@ const App = () => {
             number: newNumber
         };
         const targetPerson = people.find(person => person.name === newName);
-
         if (targetPerson === undefined) {
             peopleService
                 .create(nameObject)
@@ -34,25 +33,26 @@ const App = () => {
                     `${targetPerson.name} is already added to phonebook. Replace the old number with a new one?`
                 )
             ) {
-                console.log(targetPerson, "targetPerson");
                 peopleService
                     .update(targetPerson.id, nameObject)
-                    .then(returnedData =>
+                    .then(returnedData => {
                         setPeople(
                             people.map(person =>
                                 person.id !== returnedData.id
                                     ? person
                                     : returnedData
                             )
-                        )
-                    );
+                        );
+                    });
+                setNewName("");
+                setNewNumber("");
             }
         }
     };
 
     return (
         <div>
-            <h2>Phonebook</h2>
+            <h1>Phonebook</h1>
             <Filter people={people} filter={filter} setFilter={setFilter} />
             <h3>Add a new</h3>
             <PeopleForm
