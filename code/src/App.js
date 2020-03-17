@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Note from "./Components/Note";
 import noteService from "./Services/notes";
+import loginService from "./Services/login";
 import Notification from "./Components/Notification";
 import "./App.css";
 
@@ -16,6 +17,7 @@ const App = () => {
     const [message, setMessage] = useState(initialMessage);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         noteService.getAll().then(initialNotes => {
@@ -60,9 +62,22 @@ const App = () => {
             });
     };
 
-    const handleLogin = event => {
+    const handleLogin = async event => {
         event.preventDefault();
-        console.log("logging in with", username, password);
+        try {
+            const User = await loginService.login({ username, password });
+            setUser(User);
+            setUsername("");
+            setPassword("");
+        } catch (exception) {
+            setMessage({
+                content: "Wrong credentials",
+                type: "warning"
+            });
+            setTimeout(() => {
+                setMessage(initialMessage);
+            }, 5000);
+        }
     };
 
     const handleNoteChange = event => {
