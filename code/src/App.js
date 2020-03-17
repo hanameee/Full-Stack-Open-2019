@@ -1,98 +1,139 @@
 import React, { useState, useEffect } from "react";
-import Filter from "./Components/part2/ex15-18/Filter";
-import PeopleForm from "./Components/part2/ex15-18/PeopleForm";
-import peopleService from "./Services/people";
-import People from "./Components/People";
+
+import Note from "./Components/Note";
+import noteService from "./Services/notes";
 import Notification from "./Components/Notification";
+import "./App.css";
 
 const App = () => {
-    const [people, setPeople] = useState([]);
-    const [filter, setFilter] = useState("");
-    const [newName, setNewName] = useState("");
-    const [newNumber, setNewNumber] = useState("");
+    const [notes, setNotes] = useState([]);
+    const [newNote, setNewNote] = useState("");
+    const [showAll, setShowAll] = useState(true);
     const initialMessage = {
         content: "",
         type: null
     };
     const [message, setMessage] = useState(initialMessage);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
     useEffect(() => {
-        peopleService.getAll().then(returnedData => setPeople(returnedData));
+        noteService.getAll().then(initialNotes => {
+            setNotes(initialNotes);
+        });
     }, []);
 
-    const handleOnSubmit = event => {
+    const addNote = event => {
         event.preventDefault();
-        const nameObject = {
-            name: newName,
-            number: newNumber
+        const noteObject = {
+            content: newNote,
+            date: new Date().toISOString(),
+            important: Math.random() > 0.5,
+            id: notes.length + 1
         };
-        const targetPerson = people.find(person => person.name === newName);
 
-        if (targetPerson === undefined) {
-            peopleService
-                .create(nameObject)
-                .then(returnedData => {
-                    setPeople(people.concat(returnedData));
-                    setMessage({
-                        content: `Added ${returnedData.name}`,
-                        type: "notice"
-                    });
-                    setTimeout(() => setMessage(initialMessage), 3000);
-                })
-                .catch(error => {
-                    const errMessage = error.response.data.error;
-                    setMessage({
-                        content: errMessage,
-                        type: "warning"
-                    });
-                    setTimeout(() => setMessage(initialMessage), 3000);
+        noteService.create(noteObject).then(returnedNote => {
+            setNotes(notes.concat(returnedNote));
+            setNewNote("");
+        });
+    };
+
+    const toggleImportanceOf = id => {
+        const note = notes.find(note => note.id === id);
+        const changedNote = { ...note, important: !note.important };
+        noteService
+            .update(note.id, changedNote)
+            .then(returnedNote => {
+                setNotes(
+                    notes.map(note => (note.id !== id ? note : returnedNote))
+                );
+            })
+            .catch(error => {
+                setMessage({
+                    content: `Note '${note.content}' was already deleted from server`,
+                    type: "warning"
                 });
-            setNewName("");
-            setNewNumber("");
-        } else {
-            if (
-                window.confirm(
-                    `${targetPerson.name} is already added to phonebook. Replace the old number with a new one?`
-                )
-            ) {
-                console.log(targetPerson, "targetPerson");
-                peopleService
-                    .update(targetPerson.id, nameObject)
-                    .then(returnedData => {
-                        setPeople(
-                            people.map(person =>
-                                person.id !== returnedData.id
-                                    ? person
-                                    : returnedData
-                            )
-                        );
-                        setMessage({
-                            content: `Updated ${returnedData.name}`,
-                            type: "notice"
-                        });
-                        setTimeout(() => setMessage(initialMessage), 3000);
-                    });
-                setNewName("");
-                setNewNumber("");
-            }
-        }
+                setTimeout(() => {
+                    setMessage(initialMessage);
+                }, 5000);
+                setNotes(notes.filter(n => n.id !== id));
+            });
+    };
+
+    const handleLogin = event => {
+        event.preventDefault();
+        console.log("logging in with", username, password);
+    };
+
+    const handleNoteChange = event => {
+        setNewNote(event.target.value);
+    };
+
+    const notesToShow = showAll ? notes : notes.filter(note => note.important);
+
+    const rows = () => {
+        return notesToShow.map((note, i) => (
+            <Note
+                key={i}
+                note={note}
+                toggleImportance={() => toggleImportanceOf(note.id)}
+                getSpecific={() => noteService.getSpecific(note.id)}
+                removeOf={() => removeOf(note.id)}
+            />
+        ));
+    };
+
+    const removeOf = id => {
+        const note = notes.find(note => note.id === id);
+        noteService
+            .remove(note.id)
+            .then(() => setNotes(notes.filter(note => note.id !== id)));
     };
 
     return (
         <div>
-            <h1>Phonebook</h1>
+            <h1 className="Header">Notes</h1>
             <Notification message={message} />
-            <Filter people={people} filter={filter} setFilter={setFilter} />
-            <h3>Add a new</h3>
-            <PeopleForm
-                newName={newName}
-                setNewName={setNewName}
-                newNumber={newNumber}
-                setNewNumber={setNewNumber}
-                handleOnSubmit={handleOnSubmit}
-            />
-            <h3>Numbers</h3>
-            <People people={people} setPeople={setPeople} />
+            <div className="Wrapper">
+                <form onSubmit={handleLogin}>
+                    <div>
+                        username{" "}
+                        <input
+                            type="text"
+                            value={username}
+                            name="Username"
+                            onChange={({ target }) => {
+                                setUsername(target.value);
+                            }}
+                            autoComplete="false"
+                        />
+                    </div>
+                    <div>
+                        password{" "}
+                        <input
+                            type="password"
+                            value={password}
+                            name="Password"
+                            onChange={({ target }) => setPassword(target.value)}
+                        />
+                    </div>
+                    <button type="submit">login</button>
+                </form>
+            </div>
+            <div className="Wrapper">
+                <div>
+                    <button onClick={() => setShowAll(!showAll)}>
+                        show {showAll ? "important" : "all"}
+                    </button>
+                </div>
+                <ul>{rows()}</ul>
+            </div>
+            <div className="Wrapper">
+                <form onSubmit={addNote}>
+                    <input value={newNote} onChange={handleNoteChange} />
+                    <button type="submit">save</button>
+                </form>
+            </div>
         </div>
     );
 };
