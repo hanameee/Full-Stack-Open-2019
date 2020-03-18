@@ -19,6 +19,39 @@ const App = () => {
     const [password, setPassword] = useState("");
     const [user, setUser] = useState(null);
 
+    const loginForm = () => (
+        <form onSubmit={handleLogin}>
+            <div>
+                username{" "}
+                <input
+                    type="text"
+                    value={username}
+                    name="Username"
+                    onChange={({ target }) => {
+                        setUsername(target.value);
+                    }}
+                    autoComplete="false"
+                />
+            </div>
+            <div>
+                password{" "}
+                <input
+                    type="password"
+                    value={password}
+                    name="Password"
+                    onChange={({ target }) => setPassword(target.value)}
+                />
+            </div>
+            <button type="submit">login</button>
+        </form>
+    );
+
+    const noteForm = () => (
+        <form onSubmit={addNote}>
+            <input value={newNote} onChange={handleNoteChange} />
+            <button type="submit">save</button>
+        </form>
+    );
     useEffect(() => {
         noteService.getAll().then(initialNotes => {
             setNotes(initialNotes);
@@ -110,30 +143,14 @@ const App = () => {
             <h1 className="Header">Notes</h1>
             <Notification message={message} />
             <div className="Wrapper">
-                <form onSubmit={handleLogin}>
+                {user === null ? (
+                    loginForm()
+                ) : (
                     <div>
-                        username{" "}
-                        <input
-                            type="text"
-                            value={username}
-                            name="Username"
-                            onChange={({ target }) => {
-                                setUsername(target.value);
-                            }}
-                            autoComplete="false"
-                        />
+                        <p>{user.name} logged in</p>
+                        {noteForm()}
                     </div>
-                    <div>
-                        password{" "}
-                        <input
-                            type="password"
-                            value={password}
-                            name="Password"
-                            onChange={({ target }) => setPassword(target.value)}
-                        />
-                    </div>
-                    <button type="submit">login</button>
-                </form>
+                )}
             </div>
             <div className="Wrapper">
                 <div>
@@ -142,12 +159,6 @@ const App = () => {
                     </button>
                 </div>
                 <ul>{rows()}</ul>
-            </div>
-            <div className="Wrapper">
-                <form onSubmit={addNote}>
-                    <input value={newNote} onChange={handleNoteChange} />
-                    <button type="submit">save</button>
-                </form>
             </div>
         </div>
     );
