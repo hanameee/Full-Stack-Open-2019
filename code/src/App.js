@@ -52,10 +52,20 @@ const App = () => {
             <button type="submit">save</button>
         </form>
     );
+
     useEffect(() => {
         noteService.getAll().then(initialNotes => {
             setNotes(initialNotes);
         });
+    }, []);
+
+    useEffect(() => {
+        const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
+        if (loggedUserJSON) {
+            const User = JSON.parse(loggedUserJSON);
+            setUser(User);
+            noteService.setToken(User.token);
+        }
     }, []);
 
     const addNote = event => {
@@ -99,6 +109,11 @@ const App = () => {
         event.preventDefault();
         try {
             const User = await loginService.login({ username, password });
+            window.localStorage.setItem(
+                "loggedNoteappUser",
+                JSON.stringify(User)
+            );
+            noteService.setToken(User.token);
             setUser(User);
             setUsername("");
             setPassword("");
