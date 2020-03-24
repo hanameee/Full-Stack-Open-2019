@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 
+import "./App.css";
 import Note from "./Components/Note";
 import noteService from "./Services/notes";
 import loginService from "./Services/login";
 import Notification from "./Components/Notification";
-import "./App.css";
+import LoginForm from "./Components/LoginForm";
+import NoteForm from "./Components/NoteForm";
+import Togglable from "./Components/Togglable";
 
 const App = () => {
     const [notes, setNotes] = useState([]);
@@ -19,39 +22,31 @@ const App = () => {
     const [password, setPassword] = useState("");
     const [user, setUser] = useState(null);
 
-    const loginForm = () => (
-        <form onSubmit={handleLogin}>
-            <div>
-                username{" "}
-                <input
-                    type="text"
-                    value={username}
-                    name="Username"
-                    onChange={({ target }) => {
-                        setUsername(target.value);
-                    }}
-                    autoComplete="false"
+    const noteForm = () => {
+        return (
+            <Togglable buttonLabel="create new note">
+                <NoteForm
+                    addNote={addNote}
+                    newNote={newNote}
+                    handleNoteChange={handleNoteChange}
                 />
-            </div>
-            <div>
-                password{" "}
-                <input
-                    type="password"
-                    value={password}
-                    name="Password"
-                    onChange={({ target }) => setPassword(target.value)}
-                />
-            </div>
-            <button type="submit">login</button>
-        </form>
-    );
+            </Togglable>
+        );
+    };
 
-    const noteForm = () => (
-        <form onSubmit={addNote}>
-            <input value={newNote} onChange={handleNoteChange} />
-            <button type="submit">save</button>
-        </form>
-    );
+    const loginForm = () => {
+        return (
+            <Togglable buttonLabel="login">
+                <LoginForm
+                    handleLogin={handleLogin}
+                    username={username}
+                    password={password}
+                    handleUsernameChange={handleUsernameChange}
+                    handlePasswordChange={handlePasswordChange}
+                />
+            </Togglable>
+        );
+    };
 
     useEffect(() => {
         noteService.getAll().then(initialNotes => {
@@ -124,12 +119,32 @@ const App = () => {
             });
             setTimeout(() => {
                 setMessage(initialMessage);
-            }, 5000);
+            }, 3000);
         }
+    };
+
+    const handleLogout = () => {
+        window.localStorage.removeItem("loggedNoteappUser");
+        setMessage({
+            content: "Logged out successfully :) will be redirected in 3sec.",
+            type: "notice"
+        });
+        setTimeout(() => {
+            setMessage(initialMessage);
+            window.location.reload(true);
+        }, 3000);
     };
 
     const handleNoteChange = event => {
         setNewNote(event.target.value);
+    };
+
+    const handleUsernameChange = event => {
+        setUsername(event.target.value);
+    };
+
+    const handlePasswordChange = event => {
+        setPassword(event.target.value);
     };
 
     const notesToShow = showAll ? notes : notes.filter(note => note.important);
@@ -163,6 +178,7 @@ const App = () => {
                 ) : (
                     <div>
                         <p>{user.name} logged in</p>
+                        <button onClick={handleLogout}>logout</button>
                         {noteForm()}
                     </div>
                 )}
