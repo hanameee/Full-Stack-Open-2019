@@ -11,25 +11,19 @@ import Togglable from "./Components/Togglable";
 
 const App = () => {
     const [notes, setNotes] = useState([]);
-    const [newNote, setNewNote] = useState("");
     const [showAll, setShowAll] = useState(true);
     const initialMessage = {
         content: "",
         type: null
     };
     const [message, setMessage] = useState(initialMessage);
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+
     const [user, setUser] = useState(null);
 
     const noteForm = () => {
         return (
             <Togglable buttonLabel="create new note">
-                <NoteForm
-                    addNote={addNote}
-                    newNote={newNote}
-                    handleNoteChange={handleNoteChange}
-                />
+                <NoteForm createNote={createNote} />
             </Togglable>
         );
     };
@@ -37,13 +31,7 @@ const App = () => {
     const loginForm = () => {
         return (
             <Togglable buttonLabel="login">
-                <LoginForm
-                    handleLogin={handleLogin}
-                    username={username}
-                    password={password}
-                    handleUsernameChange={handleUsernameChange}
-                    handlePasswordChange={handlePasswordChange}
-                />
+                <LoginForm handleLogin={handleLogin} />
             </Togglable>
         );
     };
@@ -63,18 +51,9 @@ const App = () => {
         }
     }, []);
 
-    const addNote = event => {
-        event.preventDefault();
-        const noteObject = {
-            content: newNote,
-            date: new Date().toISOString(),
-            important: Math.random() > 0.5,
-            id: notes.length + 1
-        };
-
+    const createNote = noteObject => {
         noteService.create(noteObject).then(returnedNote => {
             setNotes(notes.concat(returnedNote));
-            setNewNote("");
         });
     };
 
@@ -100,8 +79,7 @@ const App = () => {
             });
     };
 
-    const handleLogin = async event => {
-        event.preventDefault();
+    const handleLogin = async ({ username, password }) => {
         try {
             const User = await loginService.login({ username, password });
             window.localStorage.setItem(
@@ -110,8 +88,6 @@ const App = () => {
             );
             noteService.setToken(User.token);
             setUser(User);
-            setUsername("");
-            setPassword("");
         } catch (exception) {
             setMessage({
                 content: "Wrong credentials",
@@ -133,18 +109,6 @@ const App = () => {
             setMessage(initialMessage);
             window.location.reload(true);
         }, 3000);
-    };
-
-    const handleNoteChange = event => {
-        setNewNote(event.target.value);
-    };
-
-    const handleUsernameChange = event => {
-        setUsername(event.target.value);
-    };
-
-    const handlePasswordChange = event => {
-        setPassword(event.target.value);
     };
 
     const notesToShow = showAll ? notes : notes.filter(note => note.important);
