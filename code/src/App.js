@@ -12,17 +12,17 @@ import Togglable from "./Components/Togglable";
 const App = () => {
     const [notes, setNotes] = useState([]);
     const [showAll, setShowAll] = useState(true);
+    const [user, setUser] = useState(null);
     const initialMessage = {
         content: "",
         type: null
     };
     const [message, setMessage] = useState(initialMessage);
-
-    const [user, setUser] = useState(null);
+    const noteFormRef = React.createRef();
 
     const noteForm = () => {
         return (
-            <Togglable buttonLabel="create new note">
+            <Togglable buttonLabel="create new note" ref={noteFormRef}>
                 <NoteForm createNote={createNote} />
             </Togglable>
         );
@@ -52,6 +52,7 @@ const App = () => {
     }, []);
 
     const createNote = noteObject => {
+        noteFormRef.current.toggleVisibility();
         noteService.create(noteObject).then(returnedNote => {
             setNotes(notes.concat(returnedNote));
         });
